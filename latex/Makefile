@@ -1,3 +1,4 @@
+#Define the main target (output PDF file)
 report.pdf: report.tex report-template.cls references.bib figures/*
 	make force
 

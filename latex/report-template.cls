@@ -25,8 +25,8 @@
 \def\repository#1{\def\@repository{#1}}
 
 % sans-serif font
-% \renewcommand{\familydefault}{\sfdefault}
-\renewcommand{\familydefault}{phv}
+\renewcommand{\familydefault}{\sfdefault}
+%\renewcommand{\familydefault}{phv}
 
 % Class options
 \DeclareOption{project-plan}{\newcommand{\doctype}{Project Plan}}
@@ -37,8 +37,20 @@
 \newcommand{\maketitlepage}{
     \makeatletter
     \begin{titlepage}
+        \begin{minipage}{0.5\textwidth}
+        \begin{flushleft} \large
+        %\hspace*{-0.5cm}
+        \includegraphics[scale=0.2]{latex/figures/Imperial_College_London_new_logo.png}\\
+        \end{flushleft}
+        \end{minipage}
+        \begin{minipage}{0.5\textwidth}
+        \begin{flushright} \large
+        %\hspace*{-0.5cm}
+        \includegraphics[scale=0.3]{latex/figures/geoteric.png}\\
+        \end{flushright}
+        \end{minipage}
+        
         \begin{center}
-    
         \begin{spacing}{1.5}
             {\LARGE
             \@university\\
