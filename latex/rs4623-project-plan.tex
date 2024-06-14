@@ -7,6 +7,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{blindtext}
+\usepackage{array}
 
 % Directory where I saved my figures.
 \graphicspath{{./figures/}}
@@ -21,7 +22,7 @@
 \githubusername{edsml-rs4623}
 \supervisors{James Lowell, Geoteric\\
              Prof. Rebecca Bell}
-\repository{https://github.com/edsml-rs4623/IRP-2024}
+\repository{https://github.com/ese-msc-2023/irp-rs4623}
 
 \begin{document}
 
@@ -62,7 +63,7 @@ Some CNN models were then developed to be fast and flexible in their application
 
 In order to create models that generalise well, blind models incorporated a noise model, and contained a sub-network to learn the noise and another non-blind denoiser ~\cite{Guo2019Cbdnet}. The model generalised better and when trained on synthetic and real noisy images they improved performance against benchmarks. However these models are dependent on developing a good noise model and having real noisy data with ground-truths, both of which can be challenging.
 
-In order to allow the model to selectively focus on the important parts of the input data various attention mechanisms have been implemented into computer vision models ~\cite{wang2017residual} ~\cite{hu2018senet}~\cite{woo2018cbam}~\cite{wang2020eca}~\cite{hou2021coordinate}. Incorporating simple feature attention has improved the performance of Denoising networks ~\cite{anwar2019rid}. Combining attention mechanisms, for example to enhance the spatial and channel representation of the model, have be shown to improve networks ~\cite{cai2023cbamdncnn}.
+In order to allow the model to selectively focus on the important parts of the input data various attention mechanisms have been implemented into computer vision models ~\cite{wang2017residual}~\cite{hu2018senet}~\cite{woo2018cbam}~\cite{wang2020eca}~\cite{hou2021coordinate}. Incorporating simple feature attention has improved the performance of Denoising networks ~\cite{anwar2019rid}. Combining attention mechanisms, for example to enhance the spatial and channel representation of the model, have be shown to improve networks ~\cite{cai2023cbamdncnn}.
 
 Recently more complex architectures that combine attention with capturing multi-scale resolution, aiming to capture both high resolution spatially precise representations along with maintaining low resolution representations with contextual information, have achieved state of the art results show in ~\ref{fig:example} ~\cite{zamir2020MIRNet}. Results from Multi-stage models based on the ides of progressively learning to capture contextual and spatial features~\cite{zamir2021MPRNet} have also achieved compelling results, however these networks are very complex and are more computationally expensive.
 
@@ -74,13 +75,20 @@ Recently more complex architectures that combine attention with capturing multi-
     \caption{\label{fig:example} Example denoising results from CNN network.}
 \end{figure}
 
-Transformer based image restoration models, leveraging self attention mechanisms to capture long range pixel interactions effectively, have also produced similar state of the art results for denosing~\cite{zamir2021restormer}~\cite{wang2022uformer}. Transformer networks computational requirements can increase drastically with increase in image resolution, a potential fix has been to incorporate  self-attention within local regions using Swin transformer design ~\cite{wang2022uformer}. Further designs have improved the context aggregation capability of these networks~\cite{zamir2021restormer}.
+Most DL applications for seismic denoising apply Dc-CNN based architectures, based on simple U-Net structures ~\cite{li2021seismicdccnn}~\cite{li2021seismicdlsims}. The use of more complex state of the art CNNs, for example incorporating attention, has not been widely explored.
+
+Transformer based image restoration models, leveraging self attention mechanisms to capture long range pixel interactions effectively, have also produced similar state of the art results for denosing~\cite{zamir2021restormer}~\cite{wang2022uformer}. Very recently, there has been some use for seismic noise attenuation ~\cite{lei2024swin}. Transformer networks computational requirements can increase drastically with increased in image resolution, a potential fix has been to incorporate  self-attention within local regions using Swin transformer design ~\cite{wang2022uformer}. Further designs have improved the context aggregation capability of these networks~\cite{zamir2021restormer}.
+
 
 \subsubsection{Training schemes}
 Supervised deep learning models, like the above, can perform well on denoising then but require a realistic noisy and clean image pairs to learn mappings, and a significant amount of realistic data to be able to generalise. Self supervised learning strategies can then help resolve some of these challenges as they don't require clean images for training.
-Noise2Noise~\cite{lehtinen2018n2n} pioneered this approach by denoising images using solely noisy images to train and producing performance similar to existing using clean labels. Many other self-supervised strategies have been developed including, Noise2void~\cite{krull2019noise2void}, Self2self~\cite{quan2020self2self}.
+Noise2Noise~\cite{lehtinen2018noise2noise} pioneered this approach by denoising images using solely noisy images to train and producing performance similar to existing using clean labels. Many other self-supervised strategies have been developed including, Noise2void~\cite{krull2019noise2void}, Self2self~\cite{quan2020self2self}.
 
 Given the challenge of having real noisy and clean data for seismic models, thus reliance on synthetic data, self-supervised models have recently advanced the field of seismic noise attenuation~\cite{liu2023tracewise}. These networks often rely on a random noise assumption~\cite{birnie2021potential}, or are capable in suppressing coherent noise in  a specific direction~\cite{liu2023tracewise}, but they don't perform as well with real dynamic noise properties.
+
+Deep Image Priors (DIP), are another unsupervised method which has been applied to seismic image ~\cite{lie2024seismicdip} with good results. The networks themselves act as the implicit image prior, the structure inherently favours natural structures over random noise. Whilst they don't require pre-training they have to be trained for each image and require some optimisation, for example early stopping to stop over-fitting, which complicated their practical use.
+
+There has been some investigating into different learning strategies but little into the use of feature learning from pre-trained models that produce high fidelity with natural images.
 
 
 \subsection{Objectives}
@@ -90,21 +98,34 @@ The project aims to investigate using established and proven model architectures
 \section{Methodology}
 As per the project brief there has been a significant amount of research and advances in the application of Deep learning to natural image datasets, including on models to denoise and improve image quality.
 
-loss functions and training schemes
+I intend to use a state of the art deep CNN with residual attention mechanism, such a MIRNetV2~\cite{zamir2022mirnetv2}, using synthetic data in a structured training scheme. I intend to conduct ablation studies for different loss functions and training schemes, in order to understand their impact. Using SNR and SSIM as key evalutation metrics.
 
-I will look to use a deep convolutional neural network with residual attention mechanism
-- Other models
-- Synthetic data
-- Building own model specific to seismic
-
+One limitation is that there are other models such as transformers which have also state of the art performance for denoising, however, these models can be computationally much more expensive and currently do not lead to significantly better results.  Another limitation is the use of structured training with synthetic data. Synthetic data can lack many of the realistic features embedded in real data, and contain noise which effectively mimics that of field data. Although it has shown promising capabilities on synthetic datasets, performance can drop with generalisation to field data ~\cite{zhang2019unsupervised}. However synthetic data from Geoteric's proprietary model represents real data much more accurately, and has proved successful in other DL related tasks.
 
 \section{Expected Outcomes}
 The project looks to demonstrate the viability of using established deep learning architectures, along with proprietary synthetic data generation, to produce models that can used for denoising products. Given the breadth and depth of the current research the models may not produce state of the art results, however this is not necessary for a sucessful outcome.
 
-
 \section{Future plan}
-
-
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Milestone} & \textbf{Timeline} & \textbf{Status} \\
+\hline
+Review natural image and seismic denoising literature & 14th June 2024 & Completed \\
+\hline
+Familiarise with implementation of existing and pre-trained models & 21st June 2024 &  In progress \\ 
+\hline
+Develop methodology to evaluate performance & 30th June 2024 & Not started \\
+\hline
+Evaluate performance on 2D images  & 31st July 2024 & Not started \\
+\hline
+Update implementation and evaluate for 3D images  & 12th August 2024 & Not started \\
+\hline
+Develop and train final models & 16th August 2024 & Not started \\
+\hline
+\end{tabular}
+\end{table}
 
 % References
 \bibliographystyle{plain}
