@@ -1,0 +1,34 @@
+% Document class `report-template` accepts either project-plan or final-report option in
+% []. This will change the title page as necessary.
+\documentclass[final-report]{report-template}
+
+% Packages I use in my report.
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{blindtext}
+\usepackage{array}
+
+% Directory where I saved my figures.
+\graphicspath{{./figures/}}
+
+% Metadata used for the title page
+\university{Imperial College London}
+\department{Department of Earth Science and Engineering}
+\course{MSc in Environmental Data Science and Machine Learning}
+\title{Noise reduction in seismic images, investigating deep learning from natural image models}
+\author{Robert Smith}
+\email{robert-edward-duncan.smith23@imperial.ac.uk}
+\githubusername{edsml-rs4623}
+\supervisors{James Lowell, Geoteric\\
+             Prof. Rebecca Bell}
+\repository{https://github.com/ese-msc-2023/irp-rs4623}
+
+\begin{document}
+
+\maketitlepage  % generate title page
+
+% References
+\bibliographystyle{plain}
+\bibliography{references}  % BibTeX references are saved in references.bib
+
+\end{document}          
